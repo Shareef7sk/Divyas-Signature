@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divya's Signature Designer</title>
+
+    <!-- Google Fonts: Playfair Display and Tenor Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Tenor+Sans&display=swap" rel="stylesheet">
+
+    <style>
+        /* * =====================================================================
+         * CSS RESET
+         * =====================================================================
+        */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeSpeed;
+            line-height: 1.5;
+        }
+        img, picture, video, canvas, svg {
+            display: block;
+            max-width: 100%;
+        }
+        input, button, textarea, select {
+            font: inherit;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        ul, ol {
+            list-style: none;
+        }
+
+        /* * =====================================================================
+         * SECTION 1: DESIGN SYSTEM & GLOBAL STYLES
+         * =====================================================================
+        */
+        :root {
+            /* Palette 1: Midnight Velvet */
+            --color-rich-black: #1a1a1a;
+            --color-off-white: #f5f5f5;
+            --color-muted-gold: #d4af37;
+            --color-medium-gray: #808080;
+
+            /* Typography Suite */
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Tenor Sans', sans-serif;
+
+            /* Fluid Typography Scale */
+            --font-size-h1: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+            --font-size-h2: clamp(2rem, 4vw + 1rem, 3.5rem);
+            --font-size-h3: clamp(1.5rem, 2.5vw + 1rem, 2.5rem);
+            --font-size-p: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
+            --font-size-small: clamp(0.875rem, 0.25vw + 0.8rem, 1rem);
+        }
+
+        body {
+            background-color: var(--color-off-white);
+            color: var(--color-rich-black);
+            font-family: var(--font-body);
+            font-size: var(--font-size-p);
+        }
+        
+        /* Prevent scrolling when menu or modal is open */
+        body.is-open,
+        body.modal-active {
+            overflow: hidden;
+        }
+
+        /* Typographic Elements */
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        h1 { font-size: var(--font-size-h1); }
+        h2 { font-size: var(--font-size-h2); }
+        h3 { font-size: var(--font-size-h3); }
+        p { font-size: var(--font-size-p); }
+        small { font-size: var(--font-size-small); }
+
+        .container {
+            width: 90%;
+            max-width: 1440px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section__see-more {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* * =====================================================================
+         * SECTION 2: CORE INTERACTIVE COMPONENTS
+         * =====================================================================
+        */
+
+        /* 2.1. The Navigation Experience */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1.5rem 5%;
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .header__nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header__logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-off-white);
+        }
+
+        .header__menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 101;
+        }
+        
+        .header__menu-toggle .icon-bar {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: var(--color-off-white);
+            margin: 5px 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        body.is-open .header__menu-toggle .icon-bar:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        body.is-open .header__menu-toggle .icon-bar:nth-child(2) {
+            opacity: 0;
+        }
+        body.is-open .header__menu-toggle .icon-bar:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .header__actions {
+            display: none; /* Hidden on mobile by default */
+        }
+        
+        .header__nav-links {
+            display: none; /* Hidden on mobile by default */
+        }
+
+        /* Overlay for mobile menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            z-index: 1000;
+        }
+
+        body.is-open .menu-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Mobile Off-Canvas Menu */
+        .off-canvas-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 300px;
+            max-width: 85vw;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.98) 0%, rgba(40, 40, 40, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--color-off-white);
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1001;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+            border-right: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        body.is-open .off-canvas-menu {
+            transform: translateX(0);
+        }
+
+        /* Close Button */
+        .off-canvas-menu__close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .off-canvas-menu__close:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--color-muted-gold);
+            transform: rotate(90deg);
+        }
+
+        .off-canvas-menu__close:active {
+            transform: rotate(90deg) scale(0.9);
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .off-canvas-menu__close svg {
+            width: 20px;
+            height: 20px;
+            color: var(--color-off-white);
+        }
+
+        /* Menu Header */
+        .off-canvas-menu__header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .off-canvas-menu__title {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            color: var(--color-muted-gold);
+            margin: 0;
+        }
+
+        /* Menu List */
+        .off-canvas-menu__list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .off-canvas-menu__list-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .off-canvas-menu__link {
+            display: block;
+            font-size: 1.25rem;
+            color: var(--color-off-white);
+            padding: 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .off-canvas-menu__link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--color-muted-gold);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .off-canvas-menu__link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--color-muted-gold);
+            padding-left: 1.5rem;
+        }
+
+        .off-canvas-menu__link:hover::before {
+            transform: scaleY(1);
+        }
+
+        .off-canvas-menu__link:active {
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(0.98);
+        }
+
+        /* Menu Footer */
+        .off-canvas-menu__footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .off-canvas-menu__auth-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            color: var(--color-off-white);
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .off-canvas-menu__auth-link:hover {
+            background: rgba(212, 175, 55, 0.25);
+            border-color: var(--color-muted-gold);
+            color: var(--color-muted-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .off-canvas-menu__auth-link:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .off-canvas-menu__auth-link svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Desktop Navigation (min-width: 768px) */
+        @media (min-width: 768px) {
+            .header {
+                background-color: transparent; /* Transparent by default on desktop */
+            }
+
+            .header.scrolled {
+                background-color: var(--color-rich-black);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .header__menu-toggle {
+                display: none;
+            }
+
+            .header__nav-links {
+                display: flex;
+                gap: 2rem;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .header__nav-link {
+                color: var(--color-off-white);
+                font-family: var(--font-body);
+                font-size: var(--font-size-small);
+                position: relative;
+                padding-bottom: 0.5rem;
+            }
+
+            .header__nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background-color: var(--color-muted-gold);
+                transform: scaleX(0);
+                transform-origin: center;
+                transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            }
+
+            .header__nav-link:hover::after {
+                transform: scaleX(1);
+            }
+
+            .header__actions {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+            }
+
+            .header__action-icon {
+                color: var(--color-off-white);
+                width: 22px;
+                height: 22px;
+                transition: color 0.3s ease;
+            }
+            
+            .header__action-icon:hover {
+                color: var(--color-muted-gold);
+            }
+
+            .header__settings-btn {
+                background: none;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.3s ease;
+            }
+
+            .header__settings-btn:hover {
+                transform: rotate(90deg);
+            }
+
+            .header__settings-btn:hover .header__action-icon {
+                color: var(--color-muted-gold);
+            }
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            color: var(--color-off-white);
+        }
+
+        .hero__video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: -2;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .hero__title {
+            max-width: 12ch;
+        }
+
+        /* 2.2. The Product Card */
+        .product-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        .product-card__container {
+            perspective: 1000px;
+        }
+        
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #eee;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        .product-card__image {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+        }
+
+        /* Mobile: smaller aspect ratio for product images */
+        @media (max-width: 767px) {
+            .product-card__image {
+                aspect-ratio: 4 / 5;
+                max-height: 400px;
+            }
+        }
+
+        .product-card__info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .product-card__name {
+            font-size: var(--font-size-h3);
+            margin-bottom: 0.25rem;
+        }
+
+        .product-card__designer,
+        .product-card__price {
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+        }
+
+        .product-card__actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .product-card__container:hover .product-card__actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .product-card__button {
+            font-size: var(--font-size-small);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--color-off-white);
+            color: var(--color-off-white);
+            background-color: transparent;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .product-card__button--primary {
+            background-color: var(--color-off-white);
+            color: var(--color-rich-black);
+        }
+        
+        .product-card__button:hover {
+            background-color: var(--color-off-white);
+            color: var(--color-rich-black);
+        }
+
+        .product-card__button--primary:hover {
+            background-color: transparent;
+            color: var(--color-off-white);
+        }
+
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* 2.3. Microinteractions - General Button */
+        .cta-button {
+            display: inline-block;
+            background: var(--color-muted-gold);
+            color: var(--color-rich-black);
+            padding: 1rem 2.5rem;
+            font-size: var(--font-size-small);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* Designers Section Layout */
+        .section--dark {
+            background-color: var(--color-rich-black);
+            color: var(--color-off-white);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header__title {
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-header__subtitle {
+            color: var(--color-medium-gray);
+            max-width: 60ch;
+            margin: 0 auto;
+        }
+
+        .section__see-more {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .designers-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        .designer-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .designer-card__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .designer-card:hover .designer-card__image {
+            transform: scale(1.05);
+        }
+
+        .designer-card__overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .designer-card__name {
+            color: var(--color-off-white);
+        }
+
+        @media (min-width: 1024px) {
+            .designers-grid {
+                grid-template-columns: repeat(6, 1fr);
+                grid-auto-rows: 300px;
+            }
+            .designer-card--large {
+                grid-column: span 3;
+                grid-row: span 2;
+            }
+            .designer-card--medium {
+                grid-column: span 3;
+            }
+            .designer-card--small {
+                grid-column: span 2;
+            }
+        }
+        
+        /* Instagram Section */
+        .instagram-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .instagram-post {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+        
+        .instagram-post__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .instagram-post:hover .instagram-post__image {
+            transform: scale(1.1);
+        }
+
+        .instagram-post__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            color: var(--color-off-white);
+        }
+        
+        .instagram-post:hover .instagram-post__overlay {
+            opacity: 1;
+        }
+
+        @media (min-width: 768px) {
+            .instagram-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--color-rich-black);
+            color: var(--color-off-white);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+        
+        .footer__brand .footer__logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer__brand .footer__tagline {
+            color: var(--color-medium-gray);
+            font-size: var(--font-size-small);
+        }
+
+        .footer__links h4 {
+            font-family: var(--font-heading);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer__links ul li a {
+            color: var(--color-medium-gray);
+            font-size: var(--font-size-small);
+            transition: color 0.3s ease;
+        }
+        
+        .footer__links ul li a:hover {
+            color: var(--color-muted-gold);
+        }
+
+        .footer__links ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer__bottom {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-medium-gray);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--color-medium-gray);
+        }
+        
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr);
+                text-align: left;
+            }
+            .footer__brand {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .footer__brand {
+                grid-column: span 1;
+            }
+            .footer-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        /* Settings Icon */
+        .settings-icon {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .settings-icon:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--color-muted-gold);
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .settings-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--color-muted-gold);
+            transition: color 0.3s ease;
+        }
+
+        .settings-icon:hover svg {
+            color: var(--color-off-white);
+        }
+
+        /* Settings Menu */
+        .settings-menu {
+            position: fixed;
+            top: 4.5rem;
+            right: 2rem;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-width: 280px;
+            max-height: 85vh;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .settings-menu__title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: var(--color-muted-gold);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .settings-menu__section {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-menu__section-title {
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            color: var(--color-medium-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .settings-menu__item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.25rem;
+            color: var(--color-off-white);
+            font-size: var(--font-size-small);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-menu__item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--color-muted-gold);
+            transform: translateX(5px);
+        }
+
+        .settings-menu__item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .settings-menu__divider {
+            height: 1px;
+            background: rgba(212, 175, 55, 0.2);
+            margin: 1rem 0;
+        }
+
+        .settings-menu__user-info {
+            padding: 1rem;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .settings-menu__user-name {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            color: var(--color-muted-gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .settings-menu__user-email {
+            font-size: 0.8rem;
+            color: var(--color-medium-gray);
+        }
+
+        @media (max-width: 768px) {
+            .settings-icon {
+                top: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .settings-menu {
+                top: 4rem;
+                right: 1rem;
+                left: 1rem;
+                min-width: auto;
+                max-width: 100%;
+            }
+
+            .header__settings-btn {
+                display: none; /* Hide in mobile, settings available in off-canvas menu */
+            }
+        }
+        
+        /* Quick View Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(26, 26, 26, 0.8);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--color-off-white);
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 2rem;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.4s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--color-rich-black);
+            line-height: 1;
+        }
+        
+        .modal-gallery__main-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .modal-gallery__thumbnails {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-gallery__thumbnail {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-gallery__thumbnail.active {
+            border-color: var(--color-muted-gold);
+        }
+        
+        .modal-info__name {
+            font-size: var(--font-size-h2);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-info__designer,
+        .modal-info__price {
+            font-size: var(--font-size-p);
+            color: var(--color-medium-gray);
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-info__description {
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Settings Menu -->
+    <div class="settings-menu" id="settingsMenu">
+        <h3 class="settings-menu__title">Settings & Account</h3>
+        
+        <!-- User Info Section (shown if logged in) -->
+        <div class="settings-menu__user-info" id="userInfo" style="display: none;">
+            <div class="settings-menu__user-name" id="userName">Guest User</div>
+            <div class="settings-menu__user-email" id="userEmail">guest@example.com</div>
+        </div>
+
+        <!-- Account Section -->
+        <div class="settings-menu__section">
+            <div class="settings-menu__section-title">Account</div>
+            <div class="settings-menu__item" id="loginBtn" onclick="window.location.href='login.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                </svg>
+                <span>Sign In</span>
+            </div>
+            <div class="settings-menu__item" onclick="window.location.href='signup.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                </svg>
+                <span>Create Account</span>
+            </div>
+            <div class="settings-menu__item" id="myAccountBtn" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                <span>My Account</span>
+            </div>
+            <div class="settings-menu__item" id="myOrdersBtn" style="display: none;" onclick="window.location.href='orders.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.658-.463 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" />
+                </svg>
+                <span>My Orders</span>
+            </div>
+        </div>
+
+        <div class="settings-menu__divider"></div>
+
+        <!-- Shop Navigation -->
+        <div class="settings-menu__section">
+            <div class="settings-menu__section-title">Shop</div>
+            <div class="settings-menu__item" onclick="window.location.href='#new-in'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                </svg>
+                <span>New Arrivals</span>
+            </div>
+            <div class="settings-menu__item" onclick="window.location.href='New_in.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 3.129 3.5h1.878a2.25 2.25 0 0 1 1.594.659l.653.653a2.25 2.25 0 0 0 3.182 0l.659-.659a2.25 2.25 0 0 1 1.594-.659h1.878a1.5 1.5 0 0 1 1.061 2.561l1.189 1.19a3.004 3.004 0 0 1-.621 4.72" />
+                </svg>
+                <span>All Products</span>
+            </div>
+            <div class="settings-menu__item" onclick="window.location.href='#clothing'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                </svg>
+                <span>Clothing</span>
+            </div>
+            <div class="settings-menu__item" onclick="window.location.href='#accessories'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>
+                <span>Accessories</span>
+            </div>
+            <div class="settings-menu__item" onclick="window.location.href='#designers'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+                <span>Designers</span>
+            </div>
+        </div>
+
+        <div class="settings-menu__divider"></div>
+
+        <!-- Preferences -->
+        <div class="settings-menu__section">
+            <div class="settings-menu__section-title">Preferences</div>
+            <div class="settings-menu__item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21 15.75 12 10.5 3 4.875 12 10.5 21Zm0 0 5.25-9m0 0L21 3m-5.25 9L21 21" />
+                </svg>
+                <span>Language: English</span>
+            </div>
+            <div class="settings-menu__item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span>Currency: USD</span>
+            </div>
+            <div class="settings-menu__item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <span>Notifications</span>
+            </div>
+        </div>
+
+        <div class="settings-menu__divider"></div>
+
+        <!-- Help & Info -->
+        <div class="settings-menu__section">
+            <div class="settings-menu__section-title">Help & Info</div>
+            <div class="settings-menu__item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                </svg>
+                <span>Help Center</span>
+            </div>
+            <div class="settings-menu__item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                </svg>
+                <span>Contact Us</span>
+            </div>
+            <div class="settings-menu__item">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                </svg>
+                <span>About Us</span>
+            </div>
+        </div>
+
+        <div class="settings-menu__divider"></div>
+
+        <!-- Logout (shown when logged in) -->
+        <div class="settings-menu__item" id="logoutBtn" style="display: none; color: #ff6b6b;">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+            </svg>
+            <span>Sign Out</span>
+        </div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <!-- Off-Canvas Menu for Mobile -->
+    <nav class="off-canvas-menu" id="off-canvas-menu">
+        <!-- Close Button -->
+        <button class="off-canvas-menu__close" id="menu-close" aria-label="Close Menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <!-- Menu Header -->
+        <div class="off-canvas-menu__header">
+            <h2 class="off-canvas-menu__title">Menu</h2>
+        </div>
+
+        <ul class="off-canvas-menu__list">
+            <li class="off-canvas-menu__list-item"><a href="#new-in" class="off-canvas-menu__link">New In</a></li>
+            <li class="off-canvas-menu__list-item"><a href="#designers" class="off-canvas-menu__link">Designers</a></li>
+            <li class="off-canvas-menu__list-item"><a href="#clothing" class="off-canvas-menu__link">Clothing</a></li>
+            <li class="off-canvas-menu__list-item"><a href="#accessories" class="off-canvas-menu__link">Accessories</a></li>
+            <li class="off-canvas-menu__list-item"><a href="#journal" class="off-canvas-menu__link">Journal</a></li>
+            <li class="off-canvas-menu__list-item">
+                <a href="#" class="off-canvas-menu__link" id="mobileSettingsLink">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; height: 18px; display: inline-block; margin-right: 8px; vertical-align: middle;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    Settings
+                </a>
+            </li>
+        </ul>
+
+        <!-- Menu Footer -->
+        <div class="off-canvas-menu__footer">
+            <a href="login.html" class="off-canvas-menu__auth-link">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                Sign In
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <!-- Section 2.1: Navigation Header -->
+        <header class="header" id="main-header">
+            <nav class="header__nav">
+                <a href="#" class="header__logo">Divya's Signature</a>
+                
+                <ul class="header__nav-links">
+                    <li><a href="#new-in" class="header__nav-link">New In</a></li>
+                    <li><a href="#designers" class="header__nav-link">Designers</a></li>
+                    <li><a href="#clothing" class="header__nav-link">Clothing</a></li>
+                    <li><a href="#accessories" class="header__nav-link">Accessories</a></li>
+                    <li><a href="#journal" class="header__nav-link">Journal</a></li>
+                </ul>
+
+                <div class="header__actions">
+                    <a href="#" aria-label="Search">
+                         <svg class="header__action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                    </a>
+                    <a href="#" aria-label="My Account">
+                        <svg class="header__action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                    </a>
+                    <a href="cart.html" aria-label="Shopping Cart" style="position: relative;">
+                        <svg class="header__action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.658-.463 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" /></svg>
+                        <span class="cart-count" id="cartCount" style="position: absolute; top: -8px; right: -8px; background: var(--color-muted-gold); color: var(--color-rich-black); width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;">0</span>
+                    </a>
+                    <button class="header__settings-btn" id="headerSettingsIcon" aria-label="Settings">
+                        <svg class="header__action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <button class="header__menu-toggle" id="menu-toggle" aria-label="Open Menu">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Hero Section with Background Video -->
+            <section class="hero">
+                <img class="hero__video" src="../assets/images/cover/cover_image.jpeg" alt="Divya's Signature Hero" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: cover; transform: translate(-50%, -50%); z-index: -2;">
+                <div class="hero__content">
+                    <h1 class="hero__title">Where Design Tells a Story</h1>
+                </div>
+            </section>
+
+            <!-- Featured Products Section -->
+            <section id="new-in" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h2 class="section-header__title">New In</h2>
+                        <p class="section-header__subtitle">Discover our handpicked selection of standout pieces from this season's collection.</p>
+                    </header>
+                    <div class="product-grid">
+                        <!-- Product Card 1 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/7693226/pexels-photo-7693226.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/6770032/pexels-photo-6770032.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Elegant Beige Trench Coat" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">The Archivist Trench</h3>
+                                    <small class="product-card__designer">by Atelier Luxe</small>
+                                    <p class="product-card__price">$850.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-1', 'The Archivist Trench', '850.00', 'https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Product Card 2 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/1040384/pexels-photo-1040384.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/1578997/pexels-photo-1578997.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/1040384/pexels-photo-1040384.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Structured Leather Bag" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Geo-Structure Tote</h3>
+                                    <small class="product-card__designer">by Vector</small>
+                                    <p class="product-card__price">$1200.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-2', 'Geo-Structure Tote', '1200.00', 'https://images.pexels.com/photos/1040384/pexels-photo-1040384.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Product Card 3 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/267202/pexels-photo-267202.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/167706/pexels-photo-167706.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Minimalist White Sneaker" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Canvas Court Sneaker</h3>
+                                    <small class="product-card__designer">by Common Ground</small>
+                                    <p class="product-card__price">$450.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-3', 'Canvas Court Sneaker', '450.00', 'https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section__see-more">
+                        <a href="New_in.html" class="cta-button">See More</a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- New Designers Section -->
+            <section id="designers" class="section section--dark">
+                <div class="container">
+                     <header class="section-header">
+                        <h2 class="section-header__title">New Designers</h2>
+                        <p class="section-header__subtitle">Explore the visionaries shaping the future of fashion. We are proud to introduce these new creative forces to Divya's Signature.</p>
+                    </header>
+                    <div class="designers-grid">
+                        <div class="designer-card designer-card--large">
+                             <img src="https://images.pexels.com/photos/3772506/pexels-photo-3772506.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer Portrait" class="designer-card__image">
+                             <div class="designer-card__overlay">
+                                 <h3 class="designer-card__name">Studio Sartoria</h3>
+                             </div>
+                        </div>
+                        <div class="designer-card designer-card--medium">
+                            <img src="https://images.pexels.com/photos/2043590/pexels-photo-2043590.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer Collection Piece" class="designer-card__image">
+                             <div class="designer-card__overlay">
+                                 <h3 class="designer-card__name">Form & Void</h3>
+                             </div>
+                        </div>
+                        <div class="designer-card designer-card--small">
+                            <img src="https://images.pexels.com/photos/1103829/pexels-photo-1103829.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Textile Detail" class="designer-card__image">
+                             <div class="designer-card__overlay">
+                                 <h3 class="designer-card__name">Thread Theory</h3>
+                             </div>
+                        </div>
+                        <div class="designer-card designer-card--small">
+                             <img src="https://images.pexels.com/photos/3221849/pexels-photo-3221849.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Abstract Fashion Shot" class="designer-card__image">
+                             <div class="designer-card__overlay">
+                                 <h3 class="designer-card__name">Kuro</h3>
+                             </div>
+                        </div>
+                         <div class="designer-card designer-card--medium">
+                             <img src="https://images.pexels.com/photos/325867/pexels-photo-325867.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer at work" class="designer-card__image">
+                             <div class="designer-card__overlay">
+                                 <h3 class="designer-card__name">Aether Apparel</h3>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="section__see-more">
+                        <a href="designers.html" class="cta-button">See More Designers</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clothing Section -->
+            <section id="clothing" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h2 class="section-header__title">Clothing</h2>
+                        <p class="section-header__subtitle">Curated apparel for the modern wardrobe, from timeless staples to contemporary statements.</p>
+                    </header>
+                    <div class="product-grid">
+                        <!-- Product Card 4 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/4051353/pexels-photo-4051353.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/4051352/pexels-photo-4051352.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/601316/pexels-photo-601316.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/4051353/pexels-photo-4051353.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Flowing Silk Dress" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Aria Silk Dress</h3>
+                                    <small class="product-card__designer">by Etherea</small>
+                                    <p class="product-card__price">$950.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-4', 'Aria Silk Dress', '950.00', 'https://images.pexels.com/photos/4051353/pexels-photo-4051353.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Product Card 5 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/1852382/pexels-photo-1852382.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/4210866/pexels-photo-4210866.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Cashmere Sweater" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Luxe Cashmere Knit</h3>
+                                    <small class="product-card__designer">by Common Ground</small>
+                                    <p class="product-card__price">$620.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-5', 'Luxe Cashmere Knit', '620.00', 'https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Product Card 6 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/1082528/pexels-photo-1082528.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/2884693/pexels-photo-2884693.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/1082528/pexels-photo-1082528.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Tailored Denim Jeans" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Modern Fit Denim</h3>
+                                    <small class="product-card__designer">by Studio Sartoria</small>
+                                    <p class="product-card__price">$350.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-6', 'Modern Fit Denim', '350.00', 'https://images.pexels.com/photos/1082528/pexels-photo-1082528.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section__see-more">
+                        <a href="clothing.html" class="cta-button">View All Clothing</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Accessories Section -->
+            <section id="accessories" class="section section--dark">
+                <div class="container">
+                    <header class="section-header">
+                        <h2 class="section-header__title">Accessories</h2>
+                        <p class="section-header__subtitle">The finishing touches. Explore our collection of bags, jewelry, and more to complete your look.</p>
+                    </header>
+                    <div class="product-grid">
+                        <!-- Product Card 7 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/277390/pexels-photo-277390.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/125779/pexels-photo-125779.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/280250/pexels-photo-280250.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/277390/pexels-photo-277390.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Minimalist Chronograph Watch" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Chrono Watch</h3>
+                                    <small class="product-card__designer">by Zeit</small>
+                                    <p class="product-card__price">$1100.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-7', 'Chrono Watch', '1100.00', 'https://images.pexels.com/photos/277390/pexels-photo-277390.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Product Card 8 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/39716/pexels-photo-39716.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/136248/pexels-photo-136248.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Classic Aviator Sunglasses" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Aviator Sunglasses</h3>
+                                    <small class="product-card__designer">by Vector</small>
+                                    <p class="product-card__price">$480.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-8', 'Aviator Sunglasses', '480.00', 'https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Product Card 9 -->
+                        <div class="product-card__container">
+                            <div class="product-card" data-images="https://images.pexels.com/photos/1501024/pexels-photo-1501024.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/3760324/pexels-photo-3760324.jpeg?auto=compress&cs=tinysrgb&w=800,https://images.pexels.com/photos/2313396/pexels-photo-2313396.jpeg?auto=compress&cs=tinysrgb&w=800">
+                                <img src="https://images.pexels.com/photos/1501024/pexels-photo-1501024.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Woven Leather Belt" class="product-card__image">
+                                <div class="product-card__info">
+                                    <h3 class="product-card__name">Woven Leather Belt</h3>
+                                    <small class="product-card__designer">by Atelier Luxe</small>
+                                    <p class="product-card__price">$280.00</p>
+                                </div>
+                                <div class="product-card__actions">
+                                    <button class="product-card__button quick-view-btn">Quick View</button>
+                                    <button class="product-card__button product-card__button--primary" onclick="addToCart('prod-9', 'Woven Leather Belt', '280.00', 'https://images.pexels.com/photos/1501024/pexels-photo-1501024.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section__see-more">
+                        <a href="accessories.html" class="cta-button">Explore Accessories</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instagram Section -->
+            <section id="journal" class="section">
+                <div class="container">
+                    <header class="section-header">
+                        <h2 class="section-header__title">Journal</h2>
+                        <p class="section-header__subtitle">Follow our story and inspiration @divboutiques on Instagram.</p>
+                    </header>
+                    <div class="instagram-grid">
+                        <a href="#" class="instagram-post">
+                            <img src="https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&dpr=2" alt="Instagram Post" class="instagram-post__image">
+                            <div class="instagram-post__overlay">@divboutiques</div>
+                        </a>
+                        <a href="#" class="instagram-post">
+                            <img src="https://images.pexels.com/photos/2752081/pexels-photo-2752081.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&dpr=2" alt="Instagram Post" class="instagram-post__image">
+                            <div class="instagram-post__overlay">@divboutiques</div>
+                        </a>
+                        <a href="#" class="instagram-post">
+                            <img src="https://images.pexels.com/photos/2866113/pexels-photo-2866113.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&dpr=2" alt="Instagram Post" class="instagram-post__image">
+                            <div class="instagram-post__overlay">@divboutiques</div>
+                        </a>
+                        <a href="#" class="instagram-post">
+                            <img src="https://images.pexels.com/photos/3290068/pexels-photo-3290068.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&dpr=2" alt="Instagram Post" class="instagram-post__image">
+                             <div class="instagram-post__overlay">@divboutiques</div>
+                        </a>
+                    </div>
+                    <div class="section__see-more">
+                        <a href="journal.html" class="cta-button">Visit The Journal</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer__brand">
+                        <h3 class="footer__logo">Divya's Signature</h3>
+                        <p class="footer__tagline">Modern Minimalist Luxury.</p>
+                    </div>
+                    <div class="footer__links">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">New In</a></li>
+                            <li><a href="#">Clothing</a></li>
+                            <li><a href="#">Accessories</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__links">
+                        <h4>About</h4>
+                         <ul>
+                            <li><a href="#">Designers</a></li>
+                            <li><a href="#">Journal</a></li>
+                            <li><a href="#">Our Story</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer__links">
+                        <h4>Support</h4>
+                         <ul>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Shipping & Returns</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                     <div class="footer__links">
+                        <h4>Follow Us</h4>
+                         <ul>
+                            <li><a href="#">Instagram</a></li>
+                            <li><a href="#">Pinterest</a></li>
+                            <li><a href="#">Facebook</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer__bottom">
+                    <p>&copy; 2024 Divya's Signature Designer. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Quick View Modal Structure -->
+    <div class="modal-overlay" id="quick-view-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close-btn">&times;</button>
+            <div class="modal-gallery">
+                <img src="" alt="Product Image" class="modal-gallery__main-image" id="modal-main-image">
+                <div class="modal-gallery__thumbnails" id="modal-thumbnails">
+                    <!-- Thumbnails will be generated by JS -->
+                </div>
+            </div>
+            <div class="modal-info">
+                <h3 class="modal-info__name" id="modal-product-name"></h3>
+                <p class="modal-info__designer" id="modal-product-designer"></p>
+                <p class="modal-info__price" id="modal-product-price"></p>
+                <p class="modal-info__description">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+                <button class="cta-button">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // =====================================================================
+            // SETTINGS MENU FUNCTIONALITY
+            // =====================================================================
+            const settingsIcon = document.getElementById('headerSettingsIcon');
+            const settingsMenu = document.getElementById('settingsMenu');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const userEmail = document.getElementById('userEmail');
+            const loginBtn = document.getElementById('loginBtn');
+            const myAccountBtn = document.getElementById('myAccountBtn');
+            const myOrdersBtn = document.getElementById('myOrdersBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // Toggle settings menu (desktop)
+            if (settingsIcon) {
+                settingsIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    settingsMenu.classList.toggle('active');
+                });
+            }
+
+            // Mobile settings link
+            const mobileSettingsLink = document.getElementById('mobileSettingsLink');
+            if (mobileSettingsLink) {
+                mobileSettingsLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Close off-canvas menu
+                    document.body.classList.remove('is-open');
+                    // Open settings menu
+                    settingsMenu.classList.add('active');
+                });
+            }
+
+            // Close settings menu when clicking outside
+            document.addEventListener('click', (e) => {
+                const mobileLink = document.getElementById('mobileSettingsLink');
+                if (!settingsMenu.contains(e.target) && 
+                    !settingsIcon?.contains(e.target) && 
+                    !mobileLink?.contains(e.target)) {
+                    settingsMenu.classList.remove('active');
+                }
+            });
+
+            // Prevent menu from closing when clicking inside it
+            settingsMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Check if user is logged in
+            function checkUserLogin() {
+                const user = localStorage.getItem('user');
+                const token = localStorage.getItem('authToken');
+
+                if (user && token) {
+                    const userData = JSON.parse(user);
+                    // User is logged in
+                    userInfo.style.display = 'block';
+                    userName.textContent = `${userData.firstName} ${userData.lastName}`;
+                    userEmail.textContent = userData.email;
+                    loginBtn.style.display = 'none';
+                    myAccountBtn.style.display = 'flex';
+                    myOrdersBtn.style.display = 'flex';
+                    logoutBtn.style.display = 'flex';
+                } else {
+                    // User is not logged in
+                    userInfo.style.display = 'none';
+                    loginBtn.style.display = 'flex';
+                    myAccountBtn.style.display = 'none';
+                    myOrdersBtn.style.display = 'none';
+                    logoutBtn.style.display = 'none';
+                }
+            }
+
+            // Logout functionality
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
+                alert('You have been successfully logged out.');
+                checkUserLogin(); // Update UI
+                settingsMenu.classList.remove('active');
+            });
+
+            // Check login status on page load
+            checkUserLogin();
+            
+            // =====================================================================
+            // 2.1. NAVIGATION LOGIC
+            // =====================================================================
+            
+            const header = document.getElementById('main-header');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            // --- Navbar scroll effect ---
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // --- Off-canvas menu toggle ---
+            menuToggle.addEventListener('click', () => {
+                document.body.classList.toggle('is-open');
+            });
+
+            // --- Close button for off-canvas menu ---
+            const menuClose = document.getElementById('menu-close');
+            if (menuClose) {
+                menuClose.addEventListener('click', () => {
+                    document.body.classList.remove('is-open');
+                });
+            }
+
+            // --- Close off-canvas menu on link click ---
+            const offCanvasLinks = document.querySelectorAll('.off-canvas-menu__link');
+            offCanvasLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    document.body.classList.remove('is-open');
+                });
+            });
+
+            // --- Close menu when clicking overlay ---
+            const menuOverlay = document.getElementById('menu-overlay');
+            if (menuOverlay) {
+                menuOverlay.addEventListener('click', () => {
+                    document.body.classList.remove('is-open');
+                });
+            }
+
+            // =====================================================================
+            // 2.2. PRODUCT CARD 3D TILT EFFECT
+            // =====================================================================
+
+            const cards = document.querySelectorAll('.product-card__container');
+
+            cards.forEach(cardContainer => {
+                const card = cardContainer.querySelector('.product-card');
+                
+                cardContainer.addEventListener('mousemove', (e) => {
+                    const rect = cardContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -10; // Max rotation 10deg
+                    const rotateY = ((x - centerX) / centerX) * 10; // Max rotation 10deg
+                    
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+                });
+                
+                cardContainer.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+                });
+            });
+
+            // =====================================================================
+            // QUICK VIEW MODAL LOGIC
+            // =====================================================================
+
+            const modalOverlay = document.getElementById('quick-view-modal');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const quickViewBtns = document.querySelectorAll('.quick-view-btn');
+
+            const modalMainImage = document.getElementById('modal-main-image');
+            const modalThumbnails = document.getElementById('modal-thumbnails');
+            const modalProductName = document.getElementById('modal-product-name');
+            const modalProductDesigner = document.getElementById('modal-product-designer');
+            const modalProductPrice = document.getElementById('modal-product-price');
+
+            const openModal = (productCard) => {
+                const images = productCard.dataset.images.split(',');
+                const name = productCard.querySelector('.product-card__name').textContent;
+                const designer = productCard.querySelector('.product-card__designer').textContent;
+                const price = productCard.querySelector('.product-card__price').textContent;
+
+                // Populate modal info
+                modalProductName.textContent = name;
+                modalProductDesigner.textContent = designer;
+                modalProductPrice.textContent = price;
+                
+                // Populate gallery
+                modalMainImage.src = images[0];
+                modalThumbnails.innerHTML = ''; // Clear previous thumbnails
+
+                images.forEach((imgSrc, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = imgSrc;
+                    thumb.alt = `${name} thumbnail ${index + 1}`;
+                    thumb.classList.add('modal-gallery__thumbnail');
+                    if (index === 0) {
+                        thumb.classList.add('active');
+                    }
+                    
+                    thumb.addEventListener('click', () => {
+                        modalMainImage.src = imgSrc;
+                        // Update active state for thumbnails
+                        modalThumbnails.querySelector('.active').classList.remove('active');
+                        thumb.classList.add('active');
+                    });
+                    
+                    modalThumbnails.appendChild(thumb);
+                });
+
+                document.body.classList.add('modal-active');
+                modalOverlay.classList.add('active');
+            };
+
+            const closeModal = () => {
+                document.body.classList.remove('modal-active');
+                modalOverlay.classList.remove('active');
+            };
+            
+            quickViewBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productCard = e.target.closest('.product-card');
+                    openModal(productCard);
+                });
+            });
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            // =====================================================================
+            // SHOPPING CART FUNCTIONALITY
+            // =====================================================================
+            
+            // Add to Cart function
+            window.addToCart = function(productId, productName, productPrice, productImage) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                
+                const existingItem = cart.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id: productId,
+                        name: productName,
+                        price: parseFloat(productPrice),
+                        image: productImage,
+                        quantity: 1
+                    });
+                }
+                
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                
+                // Show notification
+                showAddToCartNotification(productName);
+            };
+
+            // Update cart count
+            function updateCartCount() {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const cartCount = document.getElementById('cartCount');
+                
+                if (cartCount) {
+                    cartCount.textContent = totalItems;
+                    cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+                }
+            }
+
+            // Show add to cart notification
+            function showAddToCartNotification(productName) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(40, 40, 40, 0.92));
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    animation: slideInRight 0.3s ease;
+                `;
+                
+                notification.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px; color: #d4af37;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">Added to cart!</div>
+                        <div style="font-size: 0.875rem; color: #d4af37;">${productName}</div>
+                    </div>
+                    <a href="cart.html" style="margin-left: 1rem; padding: 0.5rem 1rem; background: #d4af37; color: #1a1a1a; text-decoration: none; border-radius: 4px; font-size: 0.875rem; font-weight: 600;">View Cart</a>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOutRight {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Initialize cart count on page load
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
+
+
+

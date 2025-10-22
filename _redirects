@@ -1,0 +1,13 @@
+# Netlify Redirects File
+# This handles client-side routing and API proxying
+
+# API redirect (if you deploy backend separately)
+/api/*  https://your-backend-url.com/api/:splat  200
+
+# SPA fallback for clean URLs
+# /cart         /cart.html        200
+# /checkout     /checkout.html    200
+# /orders       /orders.html      200
+# /login        /login.html       200
+# /signup       /signup.html      200
+

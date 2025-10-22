@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Divya's Signature Designer</title>
+
+    <!-- Google Fonts: Playfair Display and Tenor Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Tenor+Sans&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS RESET */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeSpeed;
+            line-height: 1.5;
+        }
+        img, picture, video, canvas, svg {
+            display: block;
+            max-width: 100%;
+        }
+        input, button, textarea, select {
+            font: inherit;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        ul, ol {
+            list-style: none;
+        }
+
+        /* DESIGN SYSTEM & GLOBAL STYLES */
+        :root {
+            --color-rich-black: #1a1a1a;
+            --color-off-white: #f5f5f5;
+            --color-muted-gold: #d4af37;
+            --color-medium-gray: #808080;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Tenor Sans', sans-serif;
+            --font-size-h1: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+            --font-size-h2: clamp(2rem, 4vw + 1rem, 3.5rem);
+            --font-size-h3: clamp(1.5rem, 2.5vw + 1rem, 2.5rem);
+            --font-size-p: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
+            --font-size-small: clamp(0.875rem, 0.25vw + 0.8rem, 1rem);
+        }
+
+        body {
+            background-color: var(--color-rich-black);
+            color: var(--color-off-white);
+            font-family: var(--font-body);
+            font-size: var(--font-size-p);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 3D Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Login Container */
+        .login-container {
+            width: 90%;
+            max-width: 480px;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(40, 40, 40, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem 2.5rem;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 25px 80px rgba(212, 175, 55, 0.15), 
+                        0 0 100px rgba(212, 175, 55, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            text-align: center;
+            z-index: 1;
+            animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+        }
+
+        /* Decorative background pattern for login container */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .login-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--color-muted-gold), 
+                transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo & Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-logo {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-off-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-logo a {
+            color: var(--color-off-white);
+            transition: color 0.3s ease;
+        }
+
+        .login-logo a:hover {
+            color: var(--color-muted-gold);
+        }
+
+        .login-subtitle {
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+        }
+
+        /* Form Styles */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .form-input {
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--color-medium-gray);
+            background-color: rgba(245, 245, 245, 0.05);
+            font-size: var(--font-size-p);
+            color: var(--color-off-white);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-muted-gold);
+            background-color: rgba(245, 245, 245, 0.1);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-medium-gray);
+            opacity: 0.6;
+        }
+
+        /* Password Toggle */
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-medium-gray);
+            padding: 0.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--color-rich-black);
+        }
+
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Remember Me & Forgot Password */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-small);
+            margin-top: -0.5rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--color-muted-gold);
+        }
+
+        .forgot-password {
+            color: var(--color-medium-gray);
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--color-muted-gold);
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background-color: var(--color-muted-gold);
+            color: var(--color-rich-black);
+            border: none;
+            font-size: var(--font-size-p);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .submit-button:hover {
+            transform: scale(1.02);
+            background-color: #e0bb43;
+        }
+
+        .submit-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Sign Up Button */
+        .signup-button {
+            width: 100%;
+            padding: 1rem 2rem;
+            background-color: transparent;
+            color: var(--color-off-white);
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            font-size: var(--font-size-p);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .signup-button:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            border-color: var(--color-muted-gold);
+            color: var(--color-muted-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+
+        .signup-button:active {
+            transform: translateY(0);
+        }
+
+        .signup-button svg {
+            transition: transform 0.3s ease;
+        }
+
+        .signup-button:hover svg {
+            transform: rotate(90deg);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .divider span {
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+        }
+
+        /* Social Login */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .social-button {
+            padding: 0.875rem 1.5rem;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: var(--color-rich-black);
+            font-size: var(--font-size-small);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .social-button:hover {
+            border-color: var(--color-rich-black);
+            background-color: var(--color-off-white);
+        }
+
+        .social-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Sign Up Link */
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+        }
+
+        .signup-link a {
+            color: var(--color-rich-black);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            color: var(--color-muted-gold);
+        }
+
+        /* Settings Icon */
+        .settings-icon {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .settings-icon:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--color-muted-gold);
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .settings-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--color-muted-gold);
+            transition: color 0.3s ease;
+        }
+
+        .settings-icon:hover svg {
+            color: var(--color-off-white);
+        }
+
+        /* Settings Menu */
+        .settings-menu {
+            position: fixed;
+            top: 5rem;
+            right: 2rem;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .settings-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .settings-menu__title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-muted-gold);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .settings-menu__item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--color-off-white);
+            font-size: var(--font-size-small);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-menu__item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--color-muted-gold);
+            transform: translateX(5px);
+        }
+
+        .settings-menu__item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .login-container {
+                padding: 4rem 3.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .back-home {
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Particle Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Settings Icon -->
+    <div class="settings-icon" id="settingsIcon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+    </div>
+
+    <!-- Settings Menu -->
+    <div class="settings-menu" id="settingsMenu">
+        <h3 class="settings-menu__title">Settings</h3>
+        <div class="settings-menu__item" onclick="window.location.href='index.html'">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            </svg>
+            <span>Home</span>
+        </div>
+        <div class="settings-menu__item" onclick="window.location.href='signup.html'">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+            </svg>
+            <span>Create Account</span>
+        </div>
+        <div class="settings-menu__item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+            <span>Preferences</span>
+        </div>
+        <div class="settings-menu__item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+            </svg>
+            <span>Help & Support</span>
+        </div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <h1 class="login-logo"><a href="index.html">Divya's Signature</a></h1>
+            <p class="login-subtitle">Welcome back! Please login to your account.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form" id="loginForm">
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-input" 
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="password-group">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="eye-open">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-button">Sign In</button>
+        </form>
+
+        <!-- Sign Up Button -->
+        <div style="margin-top: 1rem;">
+            <button type="button" class="signup-button" onclick="window.location.href='signup.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                </svg>
+                <span>Create New Account</span>
+            </button>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+            <button class="social-button" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span>Google</span>
+            </button>
+
+            <button class="social-button" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1877F2">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>Facebook</span>
+            </button>
+        </div>
+
+        <!-- Sign Up Link -->
+        <div class="signup-link">
+            Don't have an account? <a href="signup.html">Sign Up</a><br>
+            <a href="index.html" style="color: var(--color-muted-gold); margin-top: 0.5rem; display: inline-block;">← Back to Store</a>
+        </div>
+    </div>
+
+    <!-- New User Modal -->
+    <div id="newUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(135deg, rgba(26, 26, 26, 0.98) 0%, rgba(40, 40, 40, 0.95) 100%); padding: 3rem; border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 8px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 25px 80px rgba(212, 175, 55, 0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 64px; height: 64px; color: var(--color-muted-gold); margin: 0 auto 1.5rem;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            </svg>
+            <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: var(--color-muted-gold); margin-bottom: 1rem;">New to Divya's Signature?</h2>
+            <p style="color: var(--color-medium-gray); margin-bottom: 2rem; line-height: 1.6;">It looks like this email is not registered. Would you like to create a new account to enjoy exclusive designer collections?</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button id="goToSignup" style="flex: 1; min-width: 140px; padding: 1rem 2rem; background-color: var(--color-muted-gold); color: var(--color-rich-black); border: none; font-size: var(--font-size-p); font-weight: bold; cursor: pointer; transition: all 0.3s ease; border-radius: 4px;">
+                    Create Account
+                </button>
+                <button id="closeModal" style="flex: 1; min-width: 140px; padding: 1rem 2rem; background-color: transparent; color: var(--color-off-white); border: 2px solid var(--color-medium-gray); font-size: var(--font-size-p); cursor: pointer; transition: all 0.3s ease; border-radius: 4px;">
+                    Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // ==================== NEW USER MODAL FUNCTIONALITY ====================
+        const newUserModal = document.getElementById('newUserModal');
+        const goToSignupBtn = document.getElementById('goToSignup');
+        const closeModalBtn = document.getElementById('closeModal');
+        let userEmail = '';
+
+        function showNewUserModal(email) {
+            userEmail = email;
+            newUserModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function hideNewUserModal() {
+            newUserModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Go to signup page with email prefilled
+        goToSignupBtn.addEventListener('click', () => {
+            // Store email in sessionStorage to prefill on signup page
+            sessionStorage.setItem('signupEmail', userEmail);
+            window.location.href = 'signup.html';
+        });
+
+        // Close modal and try again
+        closeModalBtn.addEventListener('click', () => {
+            hideNewUserModal();
+        });
+
+        // Close modal when clicking outside
+        newUserModal.addEventListener('click', (e) => {
+            if (e.target === newUserModal) {
+                hideNewUserModal();
+            }
+        });
+
+        // ==================== SETTINGS MENU FUNCTIONALITY ====================
+        const settingsIcon = document.getElementById('settingsIcon');
+        const settingsMenu = document.getElementById('settingsMenu');
+
+        // Toggle settings menu
+        settingsIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            settingsMenu.classList.toggle('active');
+        });
+
+        // Close settings menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!settingsMenu.contains(e.target) && !settingsIcon.contains(e.target)) {
+                settingsMenu.classList.remove('active');
+            }
+        });
+
+        // Prevent menu from closing when clicking inside it
+        settingsMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Password Toggle Functionality
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Optional: Change icon based on visibility
+            const icon = this.querySelector('svg');
+            if (type === 'text') {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />';
+            }
+        });
+
+        // Form Submit Handler
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+
+            // Disable submit button during request
+            const submitBtn = this.querySelector('.submit-button');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing In...';
+
+            try {
+                // Send login request to backend
+                const response = await fetch('http://localhost:3000/api/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password, remember })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store token in localStorage
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Show success message
+                    alert('Login successful! Welcome back, ' + data.user.firstName + '!');
+                    
+                    // Redirect to index page
+                    window.location.href = 'index.html';
+                } else {
+                    // Check if user not found (new user)
+                    if (response.status === 404 || (data.message && data.message.toLowerCase().includes('user not found'))) {
+                        // Show new user modal
+                        showNewUserModal(email);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Sign In';
+                    } else {
+                        // Show other error messages
+                        alert('Error: ' + (data.message || 'Login failed'));
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Sign In';
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Failed to connect to server. Please make sure the backend is running.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        });
+
+        // Social Login Handlers
+        const socialButtons = document.querySelectorAll('.social-button');
+        socialButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const provider = this.querySelector('span').textContent;
+                console.log('Social login with:', provider);
+                alert('Social login with ' + provider + ' would be implemented here.');
+            });
+        });
+
+        // ==================== BOUTIQUE-THEMED 3D BACKGROUND ====================
+        
+        // Set up the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('bg-canvas'),
+            alpha: true,
+            antialias: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+
+        // Create boutique-themed geometric shapes (representing fashion items)
+        const shapes = [];
+        const shapeMaterials = [
+            new THREE.MeshPhongMaterial({ 
+                color: 0xd4af37, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.6 
+            }),
+            new THREE.MeshPhongMaterial({ 
+                color: 0xffffff, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.3 
+            }),
+            new THREE.MeshPhongMaterial({ 
+                color: 0xd4af37, 
+                wireframe: false, 
+                transparent: true, 
+                opacity: 0.2,
+                shininess: 100
+            })
+        ];
+
+        // Create various geometric fashion-inspired shapes
+        const geometries = [
+            new THREE.OctahedronGeometry(0.3, 0),      // Diamond-like (jewelry)
+            new THREE.TorusGeometry(0.3, 0.1, 8, 6),   // Ring-like (accessories)
+            new THREE.TetrahedronGeometry(0.3, 0),     // Pyramid (luxury packaging)
+            new THREE.IcosahedronGeometry(0.25, 0),    // Gem-like
+            new THREE.BoxGeometry(0.3, 0.4, 0.1),      // Tag/Label
+        ];
+
+        // Create 40 floating fashion items
+        for (let i = 0; i < 40; i++) {
+            const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+            const material = shapeMaterials[Math.floor(Math.random() * shapeMaterials.length)];
+            const mesh = new THREE.Mesh(geometry, material);
+
+            // Random position
+            mesh.position.x = (Math.random() - 0.5) * 20;
+            mesh.position.y = (Math.random() - 0.5) * 20;
+            mesh.position.z = (Math.random() - 0.5) * 20;
+
+            // Random rotation
+            mesh.rotation.x = Math.random() * Math.PI;
+            mesh.rotation.y = Math.random() * Math.PI;
+
+            // Random scale
+            const scale = Math.random() * 0.5 + 0.5;
+            mesh.scale.set(scale, scale, scale);
+
+            // Store animation data
+            mesh.userData = {
+                rotationSpeed: {
+                    x: (Math.random() - 0.5) * 0.02,
+                    y: (Math.random() - 0.5) * 0.02,
+                    z: (Math.random() - 0.5) * 0.02
+                },
+                floatSpeed: Math.random() * 0.5 + 0.3,
+                floatOffset: Math.random() * Math.PI * 2
+            };
+
+            shapes.push(mesh);
+            scene.add(mesh);
+        }
+
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Add point light (golden glow)
+        const pointLight = new THREE.PointLight(0xd4af37, 1, 100);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // Add secondary light
+        const pointLight2 = new THREE.PointLight(0xffffff, 0.5, 100);
+        pointLight2.position.set(-5, -5, 5);
+        scene.add(pointLight2);
+
+        // Create golden particle system
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 3000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 25;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.01,
+            color: 0xd4af37,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 8;
+
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Animation loop
+        const clock = new THREE.Clock();
+        
+        const animate = () => {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            // Animate fashion items
+            shapes.forEach((shape) => {
+                // Rotation
+                shape.rotation.x += shape.userData.rotationSpeed.x;
+                shape.rotation.y += shape.userData.rotationSpeed.y;
+                shape.rotation.z += shape.userData.rotationSpeed.z;
+
+                // Floating motion
+                shape.position.y += Math.sin(elapsedTime * shape.userData.floatSpeed + shape.userData.floatOffset) * 0.001;
+            });
+
+            // Animate particles
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = elapsedTime * 0.03;
+
+            // Smooth camera movement based on mouse
+            targetX = mouseX * 2;
+            targetY = mouseY * 2;
+
+            camera.position.x += (targetX - camera.position.x) * 0.02;
+            camera.position.y += (targetY - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            // Animate lights
+            pointLight.position.x = Math.sin(elapsedTime * 0.5) * 5;
+            pointLight.position.z = Math.cos(elapsedTime * 0.5) * 5;
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
+

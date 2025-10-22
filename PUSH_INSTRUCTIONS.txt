@@ -1,0 +1,91 @@
+===============================================
+GIT PUSH INSTRUCTIONS FOR DIVYA'S SIGNATURE
+===============================================
+
+Your repository is ready at:
+https://github.com/Shareef7sk/Divyas-Signature.git
+
+ISSUE: Authentication mismatch (shareefsas2py vs Shareef7sk)
+
+===============================================
+SOLUTION: Use Personal Access Token
+===============================================
+
+STEP 1: Get Your Token
+-----------------------
+1. Go to: https://github.com/settings/tokens/new
+2. Name: Divyas-Signature-Deploy
+3. Expiration: 90 days
+4. Check: "repo" (all checkboxes under it)
+5. Click "Generate token"
+6. COPY the token (starts with ghp_...)
+
+STEP 2: Push Using Token
+--------------------------
+Run this command (replace YOUR_TOKEN with your actual token):
+
+git push https://YOUR_TOKEN@github.com/Shareef7sk/Divyas-Signature.git main --force
+
+Example:
+git push https://ghp_abc123xyz456@github.com/Shareef7sk/Divyas-Signature.git main --force
+
+===============================================
+ALTERNATIVE: Use GitHub Desktop (Easier!)
+===============================================
+
+1. Download: https://desktop.github.com/
+2. Install and sign in as Shareef7sk
+3. File → Add Local Repository
+4. Select: C:\Documents\my_site\div_page
+5. Click "Publish repository"
+6. Select "Divyas-Signature"
+7. Done!
+
+===============================================
+WHAT WILL BE PUSHED (31 FILES)
+===============================================
+
+✓ public/ (12 HTML files)
+  - index.html, login.html, signup.html
+  - cart.html, checkout.html, orders.html
+  - New_in.html, clothing.html, accessories.html
+  - designers.html, journal.html, settings-component.html
+
+✓ assets/ (2 image files)
+  - images/cover/cover_image.jpeg
+  - images/products/pexels-photo-3765114.jpeg
+
+✓ backend/ (2 files)
+  - server.js
+  - users.json (will be gitignored)
+
+✓ docs/ (6 documentation files)
+  - README.md, DEPLOYMENT.md
+  - QUICKSTART_DEPLOY.md, NETLIFY_SETUP_COMPLETE.md
+  - BACKEND_README.md, QUICK_START.md
+
+✓ Configuration files
+  - netlify.toml, .gitignore, _redirects
+  - package.json, deploy.bat
+
+✓ Documentation
+  - README.md, PROJECT_STRUCTURE.md
+  - DEPLOYMENT_CHECKLIST.md, REORGANIZATION_COMPLETE.md
+
+===============================================
+AFTER SUCCESSFUL PUSH
+===============================================
+
+Next steps:
+1. Go to https://app.netlify.com
+2. Click "Add new site" → "Import from Git"
+3. Select "GitHub"
+4. Choose "Divyas-Signature"
+5. Build settings:
+   - Publish directory: public
+   - Build command: (leave empty)
+6. Click "Deploy site"
+7. Your site will be live in 1-2 minutes!
+
+===============================================
+

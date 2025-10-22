@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothing - Divya's Signature Designer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Tenor+Sans&display=swap" rel="stylesheet">
+    <style>
+        /* All styles from new-in.html are assumed here */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; text-rendering: optimizeSpeed; line-height: 1.5; }
+        img, picture, video, canvas, svg { display: block; max-width: 100%; }
+        input, button, textarea, select { font: inherit; }
+        a { text-decoration: none; color: inherit; }
+        ul, ol { list-style: none; }
+        :root {
+            --color-rich-black: #1a1a1a; --color-off-white: #f5f5f5; --color-muted-gold: #d4af37; --color-medium-gray: #808080;
+            --font-heading: 'Playfair Display', serif; --font-body: 'Tenor Sans', sans-serif;
+            --font-size-h1: clamp(2.5rem, 5vw + 1rem, 4.5rem); --font-size-h2: clamp(2rem, 4vw + 1rem, 3.5rem);
+            --font-size-h3: clamp(1.5rem, 2.5vw + 1rem, 2.5rem); --font-size-p: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
+            --font-size-small: clamp(0.875rem, 0.25vw + 0.8rem, 1rem);
+        }
+        body { background-color: var(--color-off-white); color: var(--color-rich-black); font-family: var(--font-body); font-size: var(--font-size-p); }
+        h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+        h1 { font-size: var(--font-size-h1); } h2 { font-size: var(--font-size-h2); } h3 { font-size: var(--font-size-h3); }
+        .container { width: 90%; max-width: 1440px; margin-left: auto; margin-right: auto; }
+        .section { padding: 4rem 0; }
+        .page-header { padding: 8rem 0 4rem; text-align: center; background-color: var(--color-rich-black); color: var(--color-off-white); }
+        .page-header__back-link { display: inline-block; margin-top: 1.5rem; color: var(--color-medium-gray); font-size: var(--font-size-small); transition: color 0.3s ease; }
+        .page-header__back-link:hover { color: var(--color-muted-gold); }
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 1.5rem 5%; background-color: var(--color-rich-black); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header__nav { display: flex; justify-content: space-between; align-items: center; }
+        .header__logo { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; color: var(--color-off-white); }
+        .header__actions { display: none; }
+        .product-grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+        .product-card__container { perspective: 1000px; }
+        .product-card { background-color: #fff; border: 1px solid #eee; position: relative; overflow: hidden; transition: transform 0.4s ease-out, box-shadow 0.4s ease-out; transform-style: preserve-3d; }
+        .product-card__image { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; transition: transform 0.4s ease; }
+        @media (max-width: 767px) {
+            .product-card__image {
+                aspect-ratio: 4 / 5;
+                max-height: 400px;
+            }
+        }
+        .product-card__container:hover .product-card__image { transform: scale(1.05); }
+        .product-card__info { padding: 1.5rem; text-align: center; }
+        .product-card__name { font-size: var(--font-size-h3); margin-bottom: 0.25rem; }
+        .product-card__designer, .product-card__price { font-size: var(--font-size-small); color: var(--color-medium-gray); }
+        .product-card__actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; justify-content: center; gap: 1rem; padding: 1rem; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .product-card__container:hover .product-card__actions { opacity: 1; transform: translateY(0); }
+        .product-card__button { font-size: var(--font-size-small); padding: 0.75rem 1.5rem; border: 1px solid var(--color-off-white); color: var(--color-off-white); background-color: transparent; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease; }
+        .product-card__button--primary { background-color: var(--color-off-white); color: var(--color-rich-black); }
+        .product-card__button:hover { background-color: var(--color-off-white); color: var(--color-rich-black); }
+        .product-card__button--primary:hover { background-color: transparent; color: var(--color-off-white); }
+        @media (min-width: 768px) { 
+            .product-grid { grid-template-columns: repeat(2, 1fr); } 
+            .header__actions { display: flex; align-items: center; gap: 1.5rem; }
+            .header__action-icon { color: var(--color-off-white); width: 22px; height: 22px; transition: color 0.3s ease; }
+            .header__action-icon:hover { color: var(--color-muted-gold); }
+        }
+        @media (min-width: 1024px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1440px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
+    </style>
+</head>
+<body>
+    <header class="header" id="main-header">
+        <nav class="header__nav">
+            <a href="index.html" class="header__logo">Divya's Signature</a>
+            <div class="header__actions">
+                <a href="cart.html" aria-label="Shopping Cart" style="position: relative;">
+                    <svg class="header__action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.658-.463 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z" /></svg>
+                    <span class="cart-count" id="cartCount" style="position: absolute; top: -8px; right: -8px; background: var(--color-muted-gold); color: var(--color-rich-black); width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <header class="page-header">
+            <h1 class="page-header__title">Clothing</h1>
+            <p>Explore a full range of contemporary apparel.</p>
+            <a href="index.html" class="page-header__back-link">&larr; Back to Home</a>
+        </header>
+        <section class="section">
+            <div class="container">
+                <div class="product-grid">
+                    <div class="product-card__container"><div class="product-card"><img src="https://images.pexels.com/photos/4051353/pexels-photo-4051353.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Flowing Silk Dress" class="product-card__image"><div class="product-card__info"><h3 class="product-card__name">Aria Silk Dress</h3><small class="product-card__designer">by Etherea</small><p class="product-card__price">$950.00</p></div><div class="product-card__actions"><button class="product-card__button product-card__button--primary" onclick="addToCart('cloth-1', 'Aria Silk Dress', '950.00', 'https://images.pexels.com/photos/4051353/pexels-photo-4051353.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button></div></div></div>
+                    <div class="product-card__container"><div class="product-card"><img src="https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Cashmere Sweater" class="product-card__image"><div class="product-card__info"><h3 class="product-card__name">Luxe Cashmere Knit</h3><small class="product-card__designer">by Common Ground</small><p class="product-card__price">$620.00</p></div><div class="product-card__actions"><button class="product-card__button product-card__button--primary" onclick="addToCart('cloth-2', 'Luxe Cashmere Knit', '620.00', 'https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button></div></div></div>
+                    <div class="product-card__container"><div class="product-card"><img src="https://images.pexels.com/photos/1082528/pexels-photo-1082528.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Tailored Denim Jeans" class="product-card__image"><div class="product-card__info"><h3 class="product-card__name">Modern Fit Denim</h3><small class="product-card__designer">by Studio Sartoria</small><p class="product-card__price">$350.00</p></div><div class="product-card__actions"><button class="product-card__button product-card__button--primary" onclick="addToCart('cloth-3', 'Modern Fit Denim', '350.00', 'https://images.pexels.com/photos/1082528/pexels-photo-1082528.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button></div></div></div>
+                    <div class="product-card__container"><div class="product-card"><img src="https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Elegant Beige Trench Coat" class="product-card__image"><div class="product-card__info"><h3 class="product-card__name">The Archivist Trench</h3><small class="product-card__designer">by Atelier Luxe</small><p class="product-card__price">$850.00</p></div><div class="product-card__actions"><button class="product-card__button product-card__button--primary" onclick="addToCart('cloth-4', 'The Archivist Trench', '850.00', 'https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button></div></div></div>
+                    <div class="product-card__container"><div class="product-card"><img src="https://images.pexels.com/photos/325867/pexels-photo-325867.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Item" class="product-card__image"><div class="product-card__info"><h3 class="product-card__name">Utility Overshirt</h3><small class="product-card__designer">by Aether Apparel</small><p class="product-card__price">$550.00</p></div><div class="product-card__actions"><button class="product-card__button product-card__button--primary" onclick="addToCart('cloth-5', 'Utility Overshirt', '550.00', 'https://images.pexels.com/photos/325867/pexels-photo-325867.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button></div></div></div>
+                    <div class="product-card__container"><div class="product-card"><img src="https://images.pexels.com/photos/1852382/pexels-photo-1852382.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Item" class="product-card__image"><div class="product-card__info"><h3 class="product-card__name">Linen Trousers</h3><small class="product-card__designer">by Common Ground</small><p class="product-card__price">$380.00</p></div><div class="product-card__actions"><button class="product-card__button product-card__button--primary" onclick="addToCart('cloth-6', 'Linen Trousers', '380.00', 'https://images.pexels.com/photos/1852382/pexels-photo-1852382.jpeg?auto=compress&cs=tinysrgb&w=800')">Add to Cart</button></div></div></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // =====================================================================
+        // SHOPPING CART FUNCTIONALITY
+        // =====================================================================
+        
+        // Add to Cart function
+        window.addToCart = function(productId, productName, productPrice, productImage) {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: parseFloat(productPrice),
+                    image: productImage,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show notification
+            showAddToCartNotification(productName);
+        };
+
+        // Update cart count
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCount = document.getElementById('cartCount');
+            
+            if (cartCount) {
+                cartCount.textContent = totalItems;
+                cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // Show add to cart notification
+        function showAddToCartNotification(productName) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(40, 40, 40, 0.92));
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                border: 1px solid rgba(212, 175, 55, 0.3);
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            notification.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px; color: #d4af37;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Added to cart!</div>
+                    <div style="font-size: 0.875rem; color: #d4af37;">${productName}</div>
+                </div>
+                <a href="cart.html" style="margin-left: 1rem; padding: 0.5rem 1rem; background: #d4af37; color: #1a1a1a; text-decoration: none; border-radius: 4px; font-size: 0.875rem; font-weight: 600;">View Cart</a>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize cart count on page load
+        updateCartCount();
+    </script>
+</body>
+</html>
+

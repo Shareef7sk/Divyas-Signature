@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designers - Div boutiques Designer</title>
+    <!-- Head content, fonts, and styles from new-in.html -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Tenor+Sans&display=swap" rel="stylesheet">
+    <style>
+        /* All styles from new-in.html are assumed here */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; text-rendering: optimizeSpeed; line-height: 1.5; }
+        img, picture, video, canvas, svg { display: block; max-width: 100%; }
+        input, button, textarea, select { font: inherit; }
+        a { text-decoration: none; color: inherit; }
+        ul, ol { list-style: none; }
+        :root {
+            --color-rich-black: #1a1a1a; --color-off-white: #f5f5f5; --color-muted-gold: #d4af37; --color-medium-gray: #808080;
+            --font-heading: 'Playfair Display', serif; --font-body: 'Tenor Sans', sans-serif;
+            --font-size-h1: clamp(2.5rem, 5vw + 1rem, 4.5rem); --font-size-h2: clamp(2rem, 4vw + 1rem, 3.5rem);
+            --font-size-h3: clamp(1.5rem, 2.5vw + 1rem, 2.5rem); --font-size-p: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
+            --font-size-small: clamp(0.875rem, 0.25vw + 0.8rem, 1rem);
+        }
+        body { background-color: var(--color-off-white); color: var(--color-rich-black); font-family: var(--font-body); font-size: var(--font-size-p); transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        body.is-open { transform: translateX(280px); }
+        h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+        h1 { font-size: var(--font-size-h1); } h2 { font-size: var(--font-size-h2); } h3 { font-size: var(--font-size-h3); }
+        .container { width: 90%; max-width: 1440px; margin-left: auto; margin-right: auto; }
+        .section { padding: 4rem 0; }
+        .page-header { padding: 8rem 0 4rem; text-align: center; background-color: var(--color-rich-black); color: var(--color-off-white); }
+        .page-header__back-link { display: inline-block; margin-top: 1.5rem; color: var(--color-medium-gray); font-size: var(--font-size-small); transition: color 0.3s ease; }
+        .page-header__back-link:hover { color: var(--color-muted-gold); }
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 1.5rem 5%; background-color: var(--color-rich-black); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header__nav { display: flex; justify-content: space-between; align-items: center; }
+        .header__logo { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; color: var(--color-off-white); }
+        .header__menu-toggle { display: block; background: none; border: none; cursor: pointer; z-index: 101; }
+        .header__menu-toggle .icon-bar { display: block; width: 25px; height: 2px; background-color: var(--color-off-white); margin: 5px 0; transition: transform 0.3s ease, opacity 0.3s ease; }
+        .header__actions, .header__nav-links { display: none; }
+        .off-canvas-menu { position: fixed; top: 0; left: 0; height: 100vh; width: 280px; background-color: var(--color-rich-black); color: var(--color-off-white); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 99; padding: 6rem 2rem 2rem; }
+        @media (min-width: 768px) { .header__menu-toggle { display: none; } .header__nav-links { display: flex; gap: 2rem; position: absolute; left: 50%; transform: translateX(-50%); } .header__nav-link { color: var(--color-off-white); font-family: var(--font-body); font-size: var(--font-size-small); position: relative; padding-bottom: 0.5rem; } .header__nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background-color: var(--color-muted-gold); transform: scaleX(0); transform-origin: center; transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); } .header__nav-link:hover::after { transform: scaleX(1); } .header__actions { display: flex; align-items: center; gap: 1.5rem; } .header__action-icon { color: var(--color-off-white); width: 22px; height: 22px; transition: color 0.3s ease; } .header__action-icon:hover { color: var(--color-muted-gold); } }
+        /* Additional styles for designer page */
+        .designers-page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+        .designer-profile-card { text-align: center; }
+        .designer-profile-card__image-wrapper { aspect-ratio: 1 / 1; overflow: hidden; margin-bottom: 1.5rem; }
+        .designer-profile-card__image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .designer-profile-card:hover .designer-profile-card__image { transform: scale(1.05); }
+        .designer-profile-card__name { font-size: var(--font-size-h3); }
+        .designer-profile-card__bio { font-size: var(--font-size-small); color: var(--color-medium-gray); margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <header class="header" id="main-header">
+        <nav class="header__nav">
+            <a href="index.html" class="header__logo">Div boutiques</a>
+        </nav>
+    </header>
+
+    <main>
+        <header class="page-header">
+            <h1 class="page-header__title">Our Designers</h1>
+            <p>A curated collective of contemporary and classic visionaries.</p>
+            <a href="index.html" class="page-header__back-link">&larr; Back to Home</a>
+        </header>
+        <section class="section">
+            <div class="container">
+                <div class="designers-page-grid">
+                    <div class="designer-profile-card">
+                        <div class="designer-profile-card__image-wrapper"><img src="https://images.pexels.com/photos/3772506/pexels-photo-3772506.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer Portrait" class="designer-profile-card__image"></div>
+                        <h3 class="designer-profile-card__name">Studio Sartoria</h3>
+                        <p class="designer-profile-card__bio">Timeless tailoring with a modern edge.</p>
+                    </div>
+                    <div class="designer-profile-card">
+                        <div class="designer-profile-card__image-wrapper"><img src="https://images.pexels.com/photos/2043590/pexels-photo-2043590.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer Collection Piece" class="designer-profile-card__image"></div>
+                        <h3 class="designer-profile-card__name">Form & Void</h3>
+                        <p class="designer-profile-card__bio">Sculptural forms and architectural jewelry.</p>
+                    </div>
+                    <div class="designer-profile-card">
+                        <div class="designer-profile-card__image-wrapper"><img src="https://images.pexels.com/photos/1103829/pexels-photo-1103829.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Textile Detail" class="designer-profile-card__image"></div>
+                        <h3 class="designer-profile-card__name">Thread Theory</h3>
+                        <p class="designer-profile-card__bio">Innovative textiles and conscious production.</p>
+                    </div>
+                    <div class="designer-profile-card">
+                        <div class="designer-profile-card__image-wrapper"><img src="https://images.pexels.com/photos/3221849/pexels-photo-3221849.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Abstract Fashion Shot" class="designer-profile-card__image"></div>
+                        <h3 class="designer-profile-card__name">Kuro</h3>
+                        <p class="designer-profile-card__bio">Japanese minimalism and artisanal techniques.</p>
+                    </div>
+                    <div class="designer-profile-card">
+                        <div class="designer-profile-card__image-wrapper"><img src="https://images.pexels.com/photos/325867/pexels-photo-325867.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer at work" class="designer-profile-card__image"></div>
+                        <h3 class="designer-profile-card__name">Aether Apparel</h3>
+                        <p class="designer-profile-card__bio">Performance-driven luxury for urban life.</p>
+                    </div>
+                    <div class="designer-profile-card">
+                         <div class="designer-profile-card__image-wrapper"><img src="https://images.pexels.com/photos/3765114/pexels-photo-3765114.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Designer Portrait" class="designer-profile-card__image"></div>
+                        <h3 class="designer-profile-card__name">Atelier Luxe</h3>
+                        <p class="designer-profile-card__bio">Mastering the art of the essential.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
+

@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Divya's Signature Designer</title>
+
+    <!-- Google Fonts: Playfair Display and Tenor Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Tenor+Sans&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS RESET */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeSpeed;
+            line-height: 1.5;
+        }
+        img, picture, video, canvas, svg {
+            display: block;
+            max-width: 100%;
+        }
+        input, button, textarea, select {
+            font: inherit;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        ul, ol {
+            list-style: none;
+        }
+
+        /* DESIGN SYSTEM & GLOBAL STYLES */
+        :root {
+            --color-rich-black: #1a1a1a;
+            --color-off-white: #f5f5f5;
+            --color-muted-gold: #d4af37;
+            --color-medium-gray: #808080;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Tenor Sans', sans-serif;
+            --font-size-h1: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+            --font-size-h2: clamp(2rem, 4vw + 1rem, 3.5rem);
+            --font-size-h3: clamp(1.5rem, 2.5vw + 1rem, 2.5rem);
+            --font-size-p: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
+            --font-size-small: clamp(0.875rem, 0.25vw + 0.8rem, 1rem);
+        }
+
+        body {
+            background-color: var(--color-rich-black);
+            color: var(--color-rich-black);
+            font-family: var(--font-body);
+            font-size: var(--font-size-p);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* 5D Canvas Background */
+        #bg-canvas-5d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Gradient Overlay for depth */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(26, 26, 26, 0.3) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Signup Container */
+        .signup-container {
+            width: 90%;
+            max-width: 480px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 245, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 3rem 2.5rem;
+            box-shadow: 0 25px 80px rgba(212, 175, 55, 0.2), 
+                        0 0 100px rgba(212, 175, 55, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            max-height: 95vh;
+            overflow-y: auto;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+        }
+
+        /* Decorative animated border effect */
+        .signup-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                #d4af37, 
+                #f5f5f5, 
+                #d4af37, 
+                #f5f5f5);
+            background-size: 400% 400%;
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.3;
+            animation: gradientShift 8s ease infinite;
+            filter: blur(8px);
+        }
+
+        /* Dot pattern overlay */
+        .signup-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ensure content is above decorative elements */
+        .signup-container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo & Header */
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .signup-logo {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-rich-black);
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-logo a {
+            color: var(--color-rich-black);
+            transition: color 0.3s ease;
+        }
+
+        .signup-logo a:hover {
+            color: var(--color-muted-gold);
+        }
+
+        .signup-subtitle {
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+        }
+
+        /* Form Styles */
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: var(--font-size-small);
+            color: var(--color-rich-black);
+            font-weight: 500;
+        }
+
+        .form-input {
+            padding: 0.875rem 1rem;
+            border: 1px solid #ddd;
+            background-color: var(--color-off-white);
+            font-size: var(--font-size-p);
+            color: var(--color-rich-black);
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .form-input:hover {
+            border-color: var(--color-muted-gold);
+            background-color: #fff;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-muted-gold);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-input:active {
+            transform: scale(0.995);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-medium-gray);
+            opacity: 0.6;
+        }
+
+        /* Password Toggle */
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-medium-gray);
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            border-radius: 4px;
+        }
+
+        .password-toggle:hover {
+            color: var(--color-rich-black);
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%) scale(0.9);
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
+
+        /* Error Message */
+        .error-message {
+            font-size: 0.875rem;
+            color: #dc3545;
+            margin-top: -0.5rem;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        /* Success Message */
+        .success-message {
+            padding: 1rem;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            border-radius: 4px;
+            font-size: var(--font-size-small);
+            display: none;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        /* Terms & Conditions */
+        .terms-agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: var(--font-size-small);
+            margin-top: 0.5rem;
+        }
+
+        .terms-agreement input[type="checkbox"] {
+            margin-top: 0.25rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--color-muted-gold);
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.2s ease;
+        }
+
+        .terms-agreement input[type="checkbox"]:active {
+            transform: scale(0.9);
+        }
+
+        .terms-agreement a {
+            color: var(--color-rich-black);
+            text-decoration: underline;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            padding: 0.1rem 0.3rem;
+            margin: -0.1rem -0.3rem;
+            border-radius: 3px;
+        }
+
+        .terms-agreement a:hover {
+            color: var(--color-muted-gold);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .terms-agreement a:active {
+            background-color: rgba(212, 175, 55, 0.15);
+            transform: scale(0.98);
+        }
+
+        /* Submit Button */
+        .submit-button {
+            padding: 1rem 2rem;
+            background-color: var(--color-rich-black);
+            color: var(--color-off-white);
+            border: 2px solid var(--color-rich-black);
+            font-size: var(--font-size-p);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.5rem;
+            -webkit-tap-highlight-color: transparent;
+            border-radius: 4px;
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--color-muted-gold);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .submit-button:hover::before {
+            left: 0;
+        }
+
+        .submit-button:hover {
+            border-color: var(--color-muted-gold);
+            color: var(--color-rich-black);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .submit-button:active {
+            transform: scale(0.96) translateY(0);
+            box-shadow: 0 2px 6px rgba(212, 175, 55, 0.2);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Mobile touch feedback */
+        @media (hover: none) and (pointer: coarse) {
+            .submit-button:active {
+                background-color: var(--color-muted-gold);
+                border-color: var(--color-muted-gold);
+                color: var(--color-rich-black);
+            }
+        }
+
+        /* Sign In Link */
+        .signin-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: var(--font-size-small);
+            color: var(--color-medium-gray);
+        }
+
+        .signin-link a {
+            color: var(--color-rich-black);
+            font-weight: 500;
+            -webkit-tap-highlight-color: transparent;
+            padding: 0.25rem 0.5rem;
+            margin: -0.25rem -0.5rem;
+            border-radius: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .signin-link a:hover {
+            color: var(--color-muted-gold);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .signin-link a:active {
+            background-color: rgba(212, 175, 55, 0.15);
+            transform: scale(0.98);
+        }
+
+        /* Back to Home Link */
+        .back-home {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-off-white);
+            font-size: var(--font-size-small);
+            transition: all 0.3s ease;
+            z-index: 10;
+            -webkit-tap-highlight-color: transparent;
+            padding: 0.5rem;
+            margin: -0.5rem;
+            border-radius: 4px;
+        }
+
+        .back-home:hover {
+            color: var(--color-muted-gold);
+            transform: translateX(-5px);
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .back-home:active {
+            transform: translateX(-3px) scale(0.95);
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .back-home svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-home:hover svg {
+            transform: translateX(-3px);
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .signup-container {
+                padding: 4rem 3.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .back-home {
+                top: 1rem;
+                left: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 5D Canvas Background -->
+    <canvas id="bg-canvas-5d"></canvas>
+    
+    <!-- Gradient Overlay -->
+    <div class="gradient-overlay"></div>
+
+    <!-- Back to Home Link -->
+    <a href="index.html" class="back-home">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+        <span>Back to Home</span>
+    </a>
+
+    <!-- Signup Container -->
+    <div class="signup-container">
+        <!-- Header -->
+        <div class="signup-header">
+            <h1 class="signup-logo"><a href="index.html">Divya's Signature</a></h1>
+            <p class="signup-subtitle">Create your account to start shopping.</p>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            Account created successfully! Redirecting to login...
+        </div>
+
+        <!-- Signup Form -->
+        <form class="signup-form" id="signupForm">
+            <!-- Name Fields -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input 
+                        type="text" 
+                        id="firstName" 
+                        name="firstName" 
+                        class="form-input" 
+                        placeholder="John"
+                        required
+                        autocomplete="given-name"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input 
+                        type="text" 
+                        id="lastName" 
+                        name="lastName" 
+                        class="form-input" 
+                        placeholder="Doe"
+                        required
+                        autocomplete="family-name"
+                    >
+                </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-input" 
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+                <span class="error-message" id="emailError">Please enter a valid email address.</span>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="form-group">
+                <label for="phone" class="form-label">Phone Number (Optional)</label>
+                <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone" 
+                    class="form-input" 
+                    placeholder="+1 (555) 123-4567"
+                    autocomplete="tel"
+                >
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="password-group">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="At least 8 characters"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="passwordError">Password must be at least 8 characters.</span>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <div class="password-group">
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        class="form-input" 
+                        placeholder="Re-enter your password"
+                        required
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" id="toggleConfirmPassword" aria-label="Toggle password visibility">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+                </div>
+                <span class="error-message" id="confirmPasswordError">Passwords do not match.</span>
+            </div>
+
+            <!-- Terms & Conditions -->
+            <label class="terms-agreement">
+                <input type="checkbox" id="terms" name="terms" required>
+                <span>I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></span>
+            </label>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-button">Create Account</button>
+        </form>
+
+        <!-- Sign In Link -->
+        <div class="signin-link">
+            Already have an account? <a href="login.html">Sign In</a>
+        </div>
+    </div>
+
+    <script>
+        // Password Toggle Functionality
+        function setupPasswordToggle(toggleId, inputId) {
+            const toggle = document.getElementById(toggleId);
+            const input = document.getElementById(inputId);
+
+            toggle.addEventListener('click', function() {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                
+                const icon = this.querySelector('svg');
+                if (type === 'text') {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />';
+                } else {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />';
+                }
+            });
+        }
+
+        setupPasswordToggle('togglePassword', 'password');
+        setupPasswordToggle('toggleConfirmPassword', 'confirmPassword');
+
+        // Form Validation
+        const signupForm = document.getElementById('signupForm');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const email = document.getElementById('email');
+
+        // Prefill email if redirected from login page
+        const prefillEmail = sessionStorage.getItem('signupEmail');
+        if (prefillEmail) {
+            email.value = prefillEmail;
+            email.focus();
+            // Clear the session storage
+            sessionStorage.removeItem('signupEmail');
+            // Focus on first name field instead
+            document.getElementById('firstName').focus();
+        }
+
+        // Real-time password match validation
+        confirmPassword.addEventListener('input', function() {
+            const error = document.getElementById('confirmPasswordError');
+            if (this.value && this.value !== password.value) {
+                error.classList.add('active');
+            } else {
+                error.classList.remove('active');
+            }
+        });
+
+        // Form Submit Handler
+        signupForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate passwords match
+            if (password.value !== confirmPassword.value) {
+                document.getElementById('confirmPasswordError').classList.add('active');
+                return;
+            }
+
+            // Collect form data
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: email.value,
+                phone: document.getElementById('phone').value,
+                password: password.value
+            };
+
+            try {
+                // Send data to backend
+                const response = await fetch('http://localhost:3000/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    document.getElementById('successMessage').classList.add('active');
+                    signupForm.style.display = 'none';
+                    
+                    // Redirect to login after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    // Show error message
+                    alert('Error: ' + (data.message || 'Failed to create account'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to connect to server. Please make sure the backend is running.');
+            }
+        });
+
+        // ==================== PROFESSIONAL 5D BACKGROUND EFFECT ====================
+        
+        // Import Three.js library
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        script.onload = init5DBackground;
+        document.head.appendChild(script);
+
+        function init5DBackground() {
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('bg-canvas-5d'),
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x0a0a0a, 1);
+
+            // Create complex 5D-inspired geometry with multiple layers
+            const geometryLayers = [];
+            
+            // Layer 1: Rotating wireframe spheres (representing higher dimensions)
+            for (let i = 0; i < 5; i++) {
+                const geometry = new THREE.IcosahedronGeometry(2 + i * 0.5, 1);
+                const material = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(0.15 + i * 0.02, 0.7, 0.5),
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.15 - i * 0.02
+                });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.userData = {
+                    rotationSpeed: { x: 0.001 * (i + 1), y: 0.002 * (i + 1), z: 0.0015 * (i + 1) },
+                    layer: i
+                };
+                scene.add(mesh);
+                geometryLayers.push(mesh);
+            }
+
+            // Layer 2: Hypercube projection (tesseract wireframe)
+            const createHypercube = () => {
+                const group = new THREE.Group();
+                const size = 3;
+                
+                // Inner cube
+                const innerGeometry = new THREE.BoxGeometry(size, size, size);
+                const innerEdges = new THREE.EdgesGeometry(innerGeometry);
+                const innerLine = new THREE.LineSegments(
+                    innerEdges,
+                    new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.6 })
+                );
+                group.add(innerLine);
+                
+                // Outer cube (scaled)
+                const outerGeometry = new THREE.BoxGeometry(size * 1.5, size * 1.5, size * 1.5);
+                const outerEdges = new THREE.EdgesGeometry(outerGeometry);
+                const outerLine = new THREE.LineSegments(
+                    outerEdges,
+                    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 })
+                );
+                group.add(outerLine);
+                
+                // Connect inner and outer cubes (4D projection)
+                const connectGeometry = new THREE.BufferGeometry();
+                const positions = [];
+                const vertices = [
+                    [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+                    [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+                ];
+                
+                vertices.forEach(v => {
+                    positions.push(v[0] * size/2, v[1] * size/2, v[2] * size/2);
+                    positions.push(v[0] * size * 0.75, v[1] * size * 0.75, v[2] * size * 0.75);
+                });
+                
+                connectGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                const connectLine = new THREE.LineSegments(
+                    connectGeometry,
+                    new THREE.LineBasicMaterial({ color: 0xd4af37, transparent: true, opacity: 0.2 })
+                );
+                group.add(connectLine);
+                
+                return group;
+            };
+            
+            const hypercube = createHypercube();
+            scene.add(hypercube);
+
+            // Layer 3: Particle field (representing multi-dimensional space)
+            const particleCount = 5000;
+            const particlesGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Create spiral distribution
+                const radius = Math.random() * 25;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI * 2;
+                
+                positions[i3] = radius * Math.sin(theta) * Math.cos(phi);
+                positions[i3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+                positions[i3 + 2] = radius * Math.cos(theta);
+                
+                // Golden to white gradient
+                const color = new THREE.Color();
+                color.setHSL(0.15, Math.random() * 0.5 + 0.5, Math.random() * 0.3 + 0.5);
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+                
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            particlesGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
+            });
+            
+            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+
+            // Layer 4: Torus knots (complex topology)
+            for (let i = 0; i < 3; i++) {
+                const torusGeometry = new THREE.TorusKnotGeometry(1 + i * 0.5, 0.3, 100, 16);
+                const torusMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xd4af37,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.1
+                });
+                const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+                torus.position.set(
+                    (Math.random() - 0.5) * 5,
+                    (Math.random() - 0.5) * 5,
+                    (Math.random() - 0.5) * 5
+                );
+                torus.userData = {
+                    rotationSpeed: {
+                        x: 0.002 * (i + 1),
+                        y: 0.003 * (i + 1),
+                        z: 0.001 * (i + 1)
+                    }
+                };
+                scene.add(torus);
+                geometryLayers.push(torus);
+            }
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            scene.add(ambientLight);
+            
+            const pointLight1 = new THREE.PointLight(0xd4af37, 1, 50);
+            pointLight1.position.set(10, 10, 10);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0xffffff, 0.5, 50);
+            pointLight2.position.set(-10, -10, 10);
+            scene.add(pointLight2);
+
+            camera.position.z = 15;
+            camera.position.y = 2;
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            // Scroll interaction
+            let scrollY = 0;
+            window.addEventListener('scroll', () => {
+                scrollY = window.scrollY;
+            });
+
+            // Animation
+            const clock = new THREE.Clock();
+            
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                // Rotate geometry layers
+                geometryLayers.forEach((mesh, index) => {
+                    if (mesh.userData.rotationSpeed) {
+                        mesh.rotation.x += mesh.userData.rotationSpeed.x;
+                        mesh.rotation.y += mesh.userData.rotationSpeed.y;
+                        mesh.rotation.z += mesh.userData.rotationSpeed.z;
+                        
+                        // Pulsing effect
+                        const scale = 1 + Math.sin(elapsedTime * 0.5 + index) * 0.1;
+                        mesh.scale.set(scale, scale, scale);
+                    }
+                });
+
+                // Hypercube 4D rotation simulation
+                hypercube.rotation.x = elapsedTime * 0.2;
+                hypercube.rotation.y = elapsedTime * 0.3;
+                hypercube.rotation.z = elapsedTime * 0.1;
+
+                // Particle rotation and flow
+                particles.rotation.y = elapsedTime * 0.05;
+                particles.rotation.x = Math.sin(elapsedTime * 0.3) * 0.2;
+                
+                // Particle position animation
+                const positions = particles.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    const idx = i / 3;
+                    positions[i + 1] += Math.sin(elapsedTime + idx * 0.01) * 0.002;
+                }
+                particles.geometry.attributes.position.needsUpdate = true;
+
+                // Camera parallax with mouse
+                targetX = mouseX * 3;
+                targetY = mouseY * 3;
+                
+                camera.position.x += (targetX - camera.position.x) * 0.05;
+                camera.position.y += (targetY - camera.position.y + 2) * 0.05;
+                
+                // Scroll effect
+                camera.position.z = 15 + scrollY * 0.01;
+                
+                // Camera look at with offset
+                camera.lookAt(
+                    Math.sin(elapsedTime * 0.2) * 2,
+                    Math.cos(elapsedTime * 0.15) * 2,
+                    0
+                );
+
+                // Animate lights
+                pointLight1.position.x = Math.sin(elapsedTime * 0.7) * 10;
+                pointLight1.position.z = Math.cos(elapsedTime * 0.5) * 10;
+                
+                pointLight2.position.x = Math.cos(elapsedTime * 0.6) * 10;
+                pointLight2.position.z = Math.sin(elapsedTime * 0.4) * 10;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            });
+        }
+    </script>
+</body>
+</html>
+
